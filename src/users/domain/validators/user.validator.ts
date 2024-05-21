@@ -1,5 +1,6 @@
 import { ClassValidatorFields } from '@/shared/validators/class-validator-fields';
-import { UserProps, UserRoles } from '../entities/user.entity';
+import { UserProps } from '../entities/user.entity';
+
 import {
   IsBoolean,
   IsDate,
@@ -11,6 +12,12 @@ import {
   MaxLength,
 } from 'class-validator';
 
+enum UserRoles {
+  OWNER = 'owner',
+  ADMIN = 'admin',
+  USER = 'user',
+  ASSISTANT = 'assistant',
+}
 export class UserRules {
   @MaxLength(255)
   @IsString()
@@ -23,17 +30,17 @@ export class UserRules {
   @IsNotEmpty()
   email: string;
 
+  @IsOptional()
   @MaxLength(255)
   @IsString()
-  @IsOptional()
   avatar?: string;
 
-  @IsBoolean()
   @IsOptional()
+  @IsBoolean()
   status?: boolean;
 
-  @IsEnum(UserRoles, { each: true })
   @IsOptional()
+  @IsEnum(UserRoles, { each: true })
   roles?: UserRoles[];
 
   @MaxLength(100)
@@ -49,8 +56,8 @@ export class UserRules {
   @IsOptional()
   updatedAt?: Date;
 
-  constructor({ email, name, password, createdAt }: UserProps) {
-    Object.assign(this, { email, name, password, createdAt });
+  constructor(props: UserProps) {
+    Object.assign(this, props);
   }
 }
 

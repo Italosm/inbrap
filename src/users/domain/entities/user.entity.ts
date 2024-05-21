@@ -95,7 +95,7 @@ export class UserEntity extends Entity<UserProps> {
     this.updatedAt = new Date();
   }
 
-  update(props: Partial<UserProps>): void {
+  update(props: Partial<Pick<UserProps, 'name' | 'email'>>): void {
     UserEntity.validate({
       ...this.props,
       ...props,

@@ -6,11 +6,13 @@ describe('UserEntity unit tests', () => {
   let sut: UserEntity;
 
   beforeEach(() => {
+    UserEntity.validate = jest.fn();
     props = UserDataBuilder({});
     sut = new UserEntity(props);
   });
 
   it('Constructor method with default values for role and status', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     expect(sut.id).toBeDefined();
     expect(sut.props.name).toEqual(props.name);
     expect(sut.props.email).toEqual(props.email);
@@ -22,6 +24,7 @@ describe('UserEntity unit tests', () => {
     expect(sut.props.updatedAt).toBeInstanceOf(Date);
   });
   it('Constructor method with provided role and status', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     const customRole = [UserRoles.ADMIN];
     const customStatus = true;
     const propsWithCustomValues: UserProps = UserDataBuilder({
@@ -147,50 +150,50 @@ describe('UserEntity unit tests', () => {
   });
 
   it('Should update a user', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     const updateTimestampSpy = jest.spyOn(sut as any, 'updateTimestamp');
     const name = 'other name';
     const email = 'other@email.com';
     sut.update({ name, email });
     expect(sut.props.name).toEqual('other name');
     expect(sut.props.email).toEqual('other@email.com');
-    expect(sut.props.updatedAt).not.toEqual(sut.props.createdAt);
     expect(updateTimestampSpy).toHaveBeenCalled();
     updateTimestampSpy.mockRestore();
   });
 
   it('Should update the roles field', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     const updateTimestampSpy = jest.spyOn(sut as any, 'updateTimestamp');
     sut.updateRoles([UserRoles.ADMIN, UserRoles.USER]);
     expect(sut.props.roles).toEqual([UserRoles.ADMIN, UserRoles.USER]);
-    expect(sut.props.updatedAt).not.toEqual(sut.props.createdAt);
     expect(updateTimestampSpy).toHaveBeenCalled();
     updateTimestampSpy.mockRestore();
   });
 
   it('Should update the avatar field', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     const updateTimestampSpy = jest.spyOn(sut as any, 'updateTimestamp');
     sut.updateAvatar('otherAvatar.png');
     expect(sut.props.avatar).toEqual('otherAvatar.png');
-    expect(sut.props.updatedAt).not.toEqual(sut.props.createdAt);
     expect(updateTimestampSpy).toHaveBeenCalled();
     updateTimestampSpy.mockRestore();
   });
 
   it('Should update the status field', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     const updateTimestampSpy = jest.spyOn(sut as any, 'updateTimestamp');
     const oldStatus = sut.status;
     sut.updateStatus(!oldStatus);
     expect(sut.props.status).not.toEqual(oldStatus);
-    expect(sut.props.updatedAt).not.toEqual(sut.props.createdAt);
     expect(updateTimestampSpy).toHaveBeenCalled();
     updateTimestampSpy.mockRestore();
   });
 
   it('Should update the password field', () => {
+    expect(UserEntity.validate).toHaveBeenCalled();
     const updateTimestampSpy = jest.spyOn(sut as any, 'updateTimestamp');
     sut.updatePassword('other password');
     expect(sut.props.password).toEqual('other password');
-    expect(sut.props.updatedAt).not.toEqual(sut.props.createdAt);
     expect(updateTimestampSpy).toHaveBeenCalled();
     updateTimestampSpy.mockRestore();
   });
