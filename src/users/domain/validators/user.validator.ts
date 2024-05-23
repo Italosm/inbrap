@@ -13,10 +13,15 @@ import {
 } from 'class-validator';
 
 enum UserRoles {
-  OWNER = 'owner',
-  ADMIN = 'admin',
-  USER = 'user',
-  ASSISTANT = 'assistant',
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  ASSISTANT = 'ASSISTANT',
+  SELLER = 'SELLER',
+  SUPERVISOR = 'SUPERVISOR',
+  DIRECTOR = 'DIRECTOR',
+  FINANCIAL = 'FINANCIAL',
+  HR = 'HR',
 }
 export class UserRules {
   @MaxLength(255)

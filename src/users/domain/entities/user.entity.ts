@@ -1,11 +1,17 @@
 import { Entity } from '@/shared/domain/entities/entity';
 import { UserValidatorFactory } from '../validators/user.validator';
+import { EntityValidationError } from '@/shared/domain/errors/validation-error';
 
 export enum UserRoles {
-  OWNER = 'owner',
-  ADMIN = 'admin',
-  USER = 'user',
-  ASSISTANT = 'assistant',
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  ASSISTANT = 'ASSISTANT',
+  SELLER = 'SELLER',
+  SUPERVISOR = 'SUPERVISOR',
+  DIRECTOR = 'DIRECTOR',
+  FINANCIAL = 'FINANCIAL',
+  HR = 'HR',
 }
 export type UserProps = {
   name: string;
@@ -25,11 +31,11 @@ export class UserEntity extends Entity<UserProps> {
   ) {
     UserEntity.validate(props);
     super(props, id);
-    this.props.avatar = this.props.avatar ?? null;
-    this.props.status = this.props.status ?? false;
-    this.props.roles = this.props.roles ?? [UserRoles.USER];
-    this.props.createdAt = this.props.createdAt ?? new Date();
-    this.props.updatedAt = this.props.updatedAt ?? new Date();
+    this.props.avatar = props.avatar ?? null;
+    this.props.status = props.status ?? false;
+    this.props.roles = props.roles ?? [UserRoles.USER];
+    this.props.createdAt = props.createdAt ?? new Date();
+    this.props.updatedAt = props.updatedAt ?? new Date();
   }
   get name() {
     return this.props.name;
@@ -146,6 +152,9 @@ export class UserEntity extends Entity<UserProps> {
 
   static validate(props: UserProps) {
     const validator = UserValidatorFactory.create();
-    validator.validate(props);
+    const isValid = validator.validate(props);
+    if (!isValid) {
+      throw new EntityValidationError(validator.errors);
+    }
   }
 }

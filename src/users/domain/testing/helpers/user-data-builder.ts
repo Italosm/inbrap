@@ -2,10 +2,15 @@ import { faker } from '@faker-js/faker';
 import { UserProps } from '../../entities/user.entity';
 
 enum UserRoles {
-  OWNER = 'owner',
-  ADMIN = 'admin',
-  USER = 'user',
-  ASSISTANT = 'assistant',
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  ASSISTANT = 'ASSISTANT',
+  SELLER = 'SELLER',
+  SUPERVISOR = 'SUPERVISOR',
+  DIRECTOR = 'DIRECTOR',
+  FINANCIAL = 'FINANCIAL',
+  HR = 'HR',
 }
 
 export function UserDataBuilder(props: Partial<UserProps>): UserProps {
