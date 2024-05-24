@@ -1,6 +1,5 @@
 import { HashProvider } from '@/shared/application/providers/hash-provider.interface';
 import { BadRequestError } from '@/shared/domain/errors/bad-request-error';
-import { ConflictError } from '@/shared/domain/errors/conflict-error';
 import { UserEntity } from '@/users/domain/entities/user.entity';
 import { UserRepository } from '@/users/domain/repositories/user.repository';
 
@@ -27,15 +26,13 @@ export namespace SignupUseCase {
     ) {}
 
     async execute(input: Input): Promise<Output> {
-      const { email, name, password } = input;
+      const { name, email, password } = input;
 
       if (!email || !name || !password) {
         throw new BadRequestError('Input data not provided');
       }
 
-      const emailExists = await this.userRepository.findByEmail(email);
-
-      if (emailExists) throw new ConflictError('Email address already used');
+      await this.userRepository.emailExists(email);
 
       const hashPassword = await this.hashProvider.generateHash(password);
 

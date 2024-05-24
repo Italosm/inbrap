@@ -3,14 +3,22 @@ import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.se
 import { UserEntity } from '@/users/domain/entities/user.entity';
 import { UserRepository } from '@/users/domain/repositories/user.repository';
 import { UserModelMapper } from '../models/user-model.mapper';
+import { ConflictError } from '@/shared/domain/errors/conflict-error';
 
 export class UserPrismaRepository implements UserRepository.Repository {
   sortableFields: string[];
 
   constructor(private prismaService: PrismaService) {}
 
-  findByEmail(email: string): Promise<UserEntity> {
-    throw new Error('Method not implemented.');
+  async findByEmail(email: string): Promise<UserEntity> {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { email },
+      });
+      return UserModelMapper.toEntity(user);
+    } catch {
+      throw new NotFoundError(`UserModel not found using email ${email}`);
+    }
   }
 
   search(
@@ -19,8 +27,10 @@ export class UserPrismaRepository implements UserRepository.Repository {
     throw new Error('Method not implemented.');
   }
 
-  insert(entity: UserEntity): Promise<void> {
-    throw new Error('Method not implemented.');
+  async insert(entity: UserEntity): Promise<void> {
+    await this.prismaService.user.create({
+      data: entity.toJSON(),
+    });
   }
 
   findById(id: string): Promise<UserEntity> {
@@ -37,6 +47,15 @@ export class UserPrismaRepository implements UserRepository.Repository {
 
   delete(id: string): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+
+  async emailExists(email: string): Promise<void> {
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+    if (user) {
+      throw new ConflictError(`Email address already used`);
+    }
   }
 
   protected async _get(id: string): Promise<UserEntity> {

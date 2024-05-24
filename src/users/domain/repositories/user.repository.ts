@@ -20,5 +20,6 @@ export namespace UserRepository {
       SearchResult
     > {
     findByEmail(email: string): Promise<UserEntity>;
+    emailExists(email: string): Promise<void>;
   }
 }
