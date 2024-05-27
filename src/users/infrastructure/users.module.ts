@@ -6,6 +6,8 @@ import { HashProvider } from '@/shared/application/providers/hash-provider.inter
 import { UserRepository } from '../domain/repositories/user.repository';
 import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
 import { UserPrismaRepository } from './database/prisma/repositories/user-prisma.repository';
+import { GetUserUseCase } from '../application/usecases/getuser.usecase';
+import { ListUsersUseCase } from '../application/usecases/listusers.usecase';
 
 @Module({
   controllers: [UsersController],
@@ -34,6 +36,20 @@ import { UserPrismaRepository } from './database/prisma/repositories/user-prisma
         return new SignupUseCase.UseCase(userRepository, hashProvider);
       },
       inject: ['UserRepository', 'HashProvider'],
+    },
+    {
+      provide: GetUserUseCase.UseCase,
+      useFactory: (userRepository: UserRepository.Repository) => {
+        return new GetUserUseCase.UseCase(userRepository);
+      },
+      inject: ['UserRepository'],
+    },
+    {
+      provide: ListUsersUseCase.UseCase,
+      useFactory: (userRepository: UserRepository.Repository) => {
+        return new ListUsersUseCase.UseCase(userRepository);
+      },
+      inject: ['UserRepository'],
     },
   ],
 })
