@@ -22,6 +22,7 @@ enum UserRoles {
   DIRECTOR = 'DIRECTOR',
   FINANCIAL = 'FINANCIAL',
   HR = 'HR',
+  SAC = 'SAC',
 }
 export class UserRules {
   @MaxLength(255)

@@ -23,6 +23,7 @@ enum UserRoles {
   DIRECTOR
   FINANCIAL
   HR
+  SAC
 }
 
 model User {

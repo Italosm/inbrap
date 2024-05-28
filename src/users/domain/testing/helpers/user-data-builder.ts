@@ -11,6 +11,7 @@ enum UserRoles {
   DIRECTOR = 'DIRECTOR',
   FINANCIAL = 'FINANCIAL',
   HR = 'HR',
+  SAC = 'SAC',
 }
 
 export function UserDataBuilder(props: Partial<UserProps>): UserProps {

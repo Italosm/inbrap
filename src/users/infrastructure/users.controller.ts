@@ -8,6 +8,7 @@ import {
   Delete,
   Inject,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { SignupUseCase } from '../application/usecases/signup.usecase';
 import { SignupDto } from './dtos/signup.dto';
@@ -19,16 +20,26 @@ import {
   UserCollectionPresenter,
 } from './presenters/user.presenter';
 import { ListUsersDto } from './dtos/list-users.dto';
+import { AuthService } from '@/auth/infrastructure/auth.service';
+import { SigninDto } from './dtos/signin.dto';
+import { SigninUseCase } from '../application/usecases/signin.usecase';
+import { AuthGuard } from '@/auth/infrastructure/auth.guard';
 @Controller('users')
 export class UsersController {
   @Inject(SignupUseCase.UseCase)
   private signupUseCase: SignupUseCase.UseCase;
+
+  @Inject(SigninUseCase.UseCase)
+  private signinUseCase: SigninUseCase.UseCase;
 
   @Inject(GetUserUseCase.UseCase)
   private getUserUseCase: GetUserUseCase.UseCase;
 
   @Inject(ListUsersUseCase.UseCase)
   private listUsersUseCase: ListUsersUseCase.UseCase;
+
+  @Inject(AuthService)
+  private authService: AuthService;
 
   static userToResponse(output: UserOutput) {
     return new UserPresenter(output);
@@ -44,6 +55,7 @@ export class UsersController {
     return UsersController.userToResponse(user);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async search(@Query() searchParams: ListUsersDto) {
     const output = await this.listUsersUseCase.execute(searchParams);
@@ -65,4 +77,10 @@ export class UsersController {
   // remove(@Param('id') id: string) {
   //   return this.usersService.remove(+id);
   // }
+
+  @Post('login')
+  async login(@Body() signinDto: SigninDto) {
+    const output = await this.signinUseCase.execute(signinDto);
+    return this.authService.generateJwt(output.id);
+  }
 }

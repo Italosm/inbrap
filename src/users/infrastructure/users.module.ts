@@ -8,8 +8,11 @@ import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.se
 import { UserPrismaRepository } from './database/prisma/repositories/user-prisma.repository';
 import { GetUserUseCase } from '../application/usecases/getuser.usecase';
 import { ListUsersUseCase } from '../application/usecases/listusers.usecase';
+import { AuthModule } from '@/auth/infrastructure/auth.module';
+import { SigninUseCase } from '../application/usecases/signin.usecase';
 
 @Module({
+  imports: [AuthModule],
   controllers: [UsersController],
   providers: [
     {
@@ -34,6 +37,16 @@ import { ListUsersUseCase } from '../application/usecases/listusers.usecase';
         hashProvider: HashProvider,
       ) => {
         return new SignupUseCase.UseCase(userRepository, hashProvider);
+      },
+      inject: ['UserRepository', 'HashProvider'],
+    },
+    {
+      provide: SigninUseCase.UseCase,
+      useFactory: (
+        userRepository: UserRepository.Repository,
+        hashProvider: HashProvider,
+      ) => {
+        return new SigninUseCase.UseCase(userRepository, hashProvider);
       },
       inject: ['UserRepository', 'HashProvider'],
     },

@@ -12,6 +12,7 @@ export enum UserRoles {
   DIRECTOR = 'DIRECTOR',
   FINANCIAL = 'FINANCIAL',
   HR = 'HR',
+  SAC = 'SAC',
 }
 export type UserProps = {
   name: string;

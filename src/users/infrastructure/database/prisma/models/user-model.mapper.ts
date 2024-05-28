@@ -8,7 +8,11 @@ import { User } from '@prisma/client';
 export class UserModelMapper {
   static toEntity(model: User) {
     const roles = model.roles.map(role => {
-      return EntityUserRoles[role as keyof typeof EntityUserRoles];
+      const entityRole = EntityUserRoles[role as keyof typeof EntityUserRoles];
+      if (!entityRole) {
+        throw new ValidationError(`Invalid role: ${role}`);
+      }
+      return entityRole;
     });
     const data = {
       name: model.name,
