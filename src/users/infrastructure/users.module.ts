@@ -65,5 +65,6 @@ import { SigninUseCase } from '../application/usecases/signin.usecase';
       inject: ['UserRepository'],
     },
   ],
+  exports: [GetUserUseCase.UseCase],
 })
 export class UsersModule {}

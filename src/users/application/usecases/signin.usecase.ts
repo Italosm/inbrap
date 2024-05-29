@@ -4,6 +4,7 @@ import { HashProvider } from '@/shared/application/providers/hash-provider.inter
 import { UserOutput, UserOutputMapper } from '../dtos/user-output';
 import { UseCase as DefaultUseCase } from '@/shared/application/usecases/usecase';
 import { InvalidCredentialsError } from '@/shared/application/errors/invalid-credentials-error';
+import { UnauthorizedException } from '@nestjs/common';
 
 export namespace SigninUseCase {
   export type Input = {
@@ -27,6 +28,10 @@ export namespace SigninUseCase {
       }
 
       const entity = await this.userRepository.findByEmail(email);
+
+      if (!entity.status) {
+        throw new UnauthorizedException();
+      }
 
       const hashPasswordMatches = await this.hashProvider.compareHash(
         password,
