@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { SignupUseCase } from '../application/usecases/signup.usecase';
 import { BcryptjsHashProvider } from './providers/hash-provider/bcryptjs-hash.provider';
@@ -12,7 +12,7 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
 import { SigninUseCase } from '../application/usecases/signin.usecase';
 
 @Module({
-  imports: [AuthModule],
+  imports: [forwardRef(() => AuthModule)],
   controllers: [UsersController],
   providers: [
     {
