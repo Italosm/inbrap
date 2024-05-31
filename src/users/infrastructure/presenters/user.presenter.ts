@@ -25,8 +25,8 @@ export class UserPresenter {
   avatar: string;
 
   @ApiProperty({
+    enum: [UserRoles],
     description: 'Roles do usuário na aplicação',
-    type: [UserRoles],
     default: [UserRoles.USER],
   })
   roles: UserRoles[];
