@@ -3,21 +3,23 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@/shared/infrastructure/decorators/public.decorator';
 import { Request } from 'express';
-import { GetUserUseCase } from '@/users/application/usecases/getuser.usecase';
 import { ROLES_KEY } from '@/shared/infrastructure/decorators/roles.decorator';
 import { UserRoles } from '@/users/domain/entities/user.entity';
+import { UserRepository } from '@/users/domain/repositories/user.repository';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    @Inject('UserRepository')
+    private userRepository: UserRepository.Repository,
     private authService: AuthService,
     private reflector: Reflector,
-    private getUserUseCase: GetUserUseCase.UseCase,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,7 +37,8 @@ export class AuthGuard implements CanActivate {
     }
     try {
       const decoded = await this.authService.verifyJwt(token);
-      const user = await this.getUserUseCase.execute({ id: decoded.id });
+      const id = decoded.id;
+      const user = await this.userRepository.findById(id);
       const { password, avatar, createdAt, updatedAt, ...userRequest } = user;
       request['user'] = userRequest;
       const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>(

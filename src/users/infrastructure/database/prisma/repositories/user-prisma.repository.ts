@@ -73,7 +73,7 @@ export class UserPrismaRepository implements UserRepository.Repository {
     });
   }
 
-  findById(id: string): Promise<UserEntity> {
+  async findById(id: string): Promise<UserEntity> {
     return this._get(id);
   }
 

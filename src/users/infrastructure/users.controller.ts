@@ -9,7 +9,6 @@ import {
   Inject,
   Query,
   Req,
-  HttpCode,
 } from '@nestjs/common';
 import { SignupUseCase } from '../application/usecases/signup.usecase';
 import { SignupDto } from './dtos/signup.dto';

@@ -73,6 +73,6 @@ import { GetMeUseCase } from '../application/usecases/getme.usecase';
       inject: ['UserRepository'],
     },
   ],
-  exports: [GetUserUseCase.UseCase],
+  exports: ['UserRepository'],
 })
 export class UsersModule {}
