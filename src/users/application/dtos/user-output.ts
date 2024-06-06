@@ -1,4 +1,8 @@
-import { UserEntity, UserRoles } from '@/users/domain/entities/user.entity';
+import {
+  UserEntity,
+  UserRoles,
+  UserSectors,
+} from '@/users/domain/entities/user.entity';
 
 export type UserOutput = {
   id: string;
@@ -8,6 +12,7 @@ export type UserOutput = {
   avatar: string;
   status: boolean;
   roles: UserRoles[];
+  sectors: UserSectors[];
   createdAt: Date;
   updatedAt: Date;
 };

@@ -24,18 +24,34 @@ enum UserRoles {
   FINANCIAL
   HR
   SAC
+  GUEST
+}
+
+enum UserSectors {
+  IT
+  MARKETING
+  MANAGER
+  ASSISTANT
+  SALES
+  BILLING
+  DIRECTOR
+  FINANCE
+  HR
+  SAC
+  GUEST
 }
 
 model User {
-  id        String      @id @db.Uuid
-  name      String      @db.VarChar(255)
-  email     String      @unique @db.VarChar(255)
-  status    Boolean     @default(false)
-  password  String      @db.VarChar(100)
-  avatar    String?     @db.VarChar(255)
-  roles     UserRoles[] @default([USER])
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id        String        @id @db.Uuid
+  name      String        @db.VarChar(255)
+  email     String        @unique @db.VarChar(255)
+  status    Boolean       @default(false)
+  password  String        @db.VarChar(100)
+  avatar    String?       @db.VarChar(255)
+  roles     UserRoles[]   @default([USER])
+  sectors   UserSectors[] @default([GUEST])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@map("users")
 }

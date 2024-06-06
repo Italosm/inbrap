@@ -1,7 +1,7 @@
 import { CollectionPresenter } from '@/shared/infrastructure/presenters/collection.presenter';
 import { UserOutput } from '@/users/application/dtos/user-output';
 import { ListUsersUseCase } from '@/users/application/usecases/listusers.usecase';
-import { UserRoles } from '@/users/domain/entities/user.entity';
+import { UserRoles, UserSectors } from '@/users/domain/entities/user.entity';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -31,6 +31,13 @@ export class UserPresenter {
   })
   roles: UserRoles[];
 
+  @ApiProperty({
+    enum: [UserSectors],
+    description: 'Roles do usuário na aplicação',
+    default: [UserSectors.GUEST],
+  })
+  sectors: UserSectors[];
+
   @ApiProperty({ description: 'Data de criação do usuário' })
   @Transform(({ value }: { value: Date }) => value.toISOString())
   createdAt: Date;
@@ -46,6 +53,7 @@ export class UserPresenter {
     this.avatar = output.avatar;
     this.status = output.status;
     this.roles = output.roles;
+    this.sectors = output.sectors;
     this.createdAt = output.createdAt;
     this.updatedAt = output.updatedAt;
   }

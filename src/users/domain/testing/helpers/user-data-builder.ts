@@ -14,6 +14,20 @@ enum UserRoles {
   SAC = 'SAC',
 }
 
+enum UserSectors {
+  IT = 'IT',
+  MARKETING = 'MARKETING',
+  MANAGER = 'MANAGER',
+  ASSISTANT = 'ASSISTANT',
+  SALES = 'SALES',
+  BILLING = 'BILLING',
+  DIRECTOR = 'DIRECTOR',
+  FINANCE = 'FINANCE',
+  HR = 'HR',
+  SAC = 'SAC',
+  GUEST = 'GUEST',
+}
+
 export function UserDataBuilder(props: Partial<UserProps>): UserProps {
   return {
     name: props.name ?? faker.person.fullName(),
@@ -22,6 +36,7 @@ export function UserDataBuilder(props: Partial<UserProps>): UserProps {
     avatar: props.avatar ?? faker.image.avatar(),
     status: props.status ?? false,
     roles: props.roles ?? [UserRoles.USER],
+    sectors: props.sectors ?? [UserSectors.GUEST],
     createdAt: props.createdAt ?? new Date(),
     updatedAt: props.updatedAt ?? new Date(),
   };

@@ -13,7 +13,23 @@ export enum UserRoles {
   FINANCIAL = 'FINANCIAL',
   HR = 'HR',
   SAC = 'SAC',
+  GUEST = 'GUEST',
 }
+
+export enum UserSectors {
+  IT = 'IT',
+  MARKETING = 'MARKETING',
+  MANAGER = 'MANAGER',
+  ASSISTANT = 'ASSISTANT',
+  SALES = 'SALES',
+  BILLING = 'BILLING',
+  DIRECTOR = 'DIRECTOR',
+  FINANCE = 'FINANCE',
+  HR = 'HR',
+  SAC = 'SAC',
+  GUEST = 'GUEST',
+}
+
 export type UserProps = {
   name: string;
   email: string;
@@ -21,6 +37,7 @@ export type UserProps = {
   avatar?: string;
   status?: boolean;
   roles?: UserRoles[];
+  sectors?: UserSectors[];
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -34,7 +51,8 @@ export class UserEntity extends Entity<UserProps> {
     super(props, id);
     this.props.avatar = props.avatar ?? null;
     this.props.status = props.status ?? false;
-    this.props.roles = props.roles ?? [UserRoles.USER];
+    this.props.roles = props.roles ?? [UserRoles.GUEST];
+    this.props.sectors = props.sectors ?? [UserSectors.GUEST];
     this.props.createdAt = props.createdAt ?? new Date();
     this.props.updatedAt = props.updatedAt ?? new Date();
   }
@@ -86,6 +104,14 @@ export class UserEntity extends Entity<UserProps> {
     this.props.roles = value;
   }
 
+  get sectors() {
+    return this.props.sectors;
+  }
+
+  private set sectors(value: UserSectors[]) {
+    this.props.sectors = value;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
@@ -121,6 +147,15 @@ export class UserEntity extends Entity<UserProps> {
       roles: value,
     });
     this.roles = value;
+    this.updateTimestamp();
+  }
+
+  updateSectors(value: UserSectors[]): void {
+    UserEntity.validate({
+      ...this.props,
+      sectors: value,
+    });
+    this.sectors = value;
     this.updateTimestamp();
   }
 

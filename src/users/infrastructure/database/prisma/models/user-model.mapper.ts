@@ -2,6 +2,7 @@ import { ValidationError } from '@/shared/domain/errors/validation-error';
 import {
   UserEntity,
   UserRoles as EntityUserRoles,
+  UserSectors as EntityUserSectors,
 } from '@/users/domain/entities/user.entity';
 import { User } from '@prisma/client';
 
@@ -14,12 +15,21 @@ export class UserModelMapper {
       }
       return entityRole;
     });
+    const sectors = model.sectors.map(sector => {
+      const entitySector =
+        EntityUserSectors[sector as keyof typeof EntityUserSectors];
+      if (!entitySector) {
+        throw new ValidationError(`Invalid sector: ${sector}`);
+      }
+      return entitySector;
+    });
     const data = {
       name: model.name,
       email: model.email,
       avatar: model.avatar,
       status: model.status,
       roles: roles,
+      sectors: sectors,
       password: model.password,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,

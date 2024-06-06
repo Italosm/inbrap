@@ -12,6 +12,7 @@ import { Request } from 'express';
 import { ROLES_KEY } from '@/shared/infrastructure/decorators/roles.decorator';
 import { UserRoles } from '@/users/domain/entities/user.entity';
 import { UserRepository } from '@/users/domain/repositories/user.repository';
+import { EVERY_ROLES_KEY } from '@/shared/infrastructure/decorators/every-roles.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -45,9 +46,22 @@ export class AuthGuard implements CanActivate {
         ROLES_KEY,
         [context.getHandler(), context.getClass()],
       );
+
+      const requiredEveryRoles = this.reflector.getAllAndOverride<UserRoles[]>(
+        EVERY_ROLES_KEY,
+        [context.getHandler(), context.getClass()],
+      );
+
       if (
         requiredRoles &&
         !requiredRoles.some(role => user.roles.includes(role))
+      ) {
+        throw new UnauthorizedException('Access denied');
+      }
+
+      if (
+        requiredEveryRoles &&
+        !requiredEveryRoles.every(role => user.roles.includes(role))
       ) {
         throw new UnauthorizedException('Access denied');
       }

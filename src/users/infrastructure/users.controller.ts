@@ -8,6 +8,7 @@ import {
   Delete,
   Inject,
   Query,
+  Request,
   Req,
 } from '@nestjs/common';
 import { SignupUseCase } from '../application/usecases/signup.usecase';
@@ -35,6 +36,7 @@ import {
   getSchemaPath,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
+import { FastifyRequest } from 'fastify';
 
 @ApiTags('Users')
 @Controller('users')
@@ -57,11 +59,11 @@ export class UsersController {
   @Inject(AuthService)
   private authService: AuthService;
 
-  static userToResponse(output: UserOutput, token?: string) {
+  static userToResponse(output: UserOutput, token?: { token: string }) {
     const userPresenter = new UserPresenter(output);
 
     if (token) {
-      return { user: userPresenter, token };
+      return { user: userPresenter, token: token.token };
     }
     return userPresenter;
   }
@@ -133,7 +135,7 @@ export class UsersController {
 
   @Get('me')
   @ApiOkResponse({ type: UserPresenter })
-  async findMe(@Req() request) {
+  async findMe(@Req() request: FastifyRequest) {
     const { id } = request.user;
     const output = await this.getMeUseCase.execute({ id });
     return UsersController.userToResponse(output);
@@ -174,7 +176,7 @@ export class UsersController {
   })
   async login(@Body() signinDto: SigninDto) {
     const user = await this.signinUseCase.execute(signinDto);
-    const token = await this.authService.generateJwt(user.id, user.roles);
+    const token = await this.authService.generateJwt(user.id);
     return UsersController.userToResponse(user, token);
   }
 }

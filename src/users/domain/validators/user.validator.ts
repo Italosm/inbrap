@@ -23,7 +23,23 @@ enum UserRoles {
   FINANCIAL = 'FINANCIAL',
   HR = 'HR',
   SAC = 'SAC',
+  GUEST = 'GUEST',
 }
+
+enum UserSectors {
+  IT = 'IT',
+  MARKETING = 'MARKETING',
+  MANAGER = 'MANAGER',
+  ASSISTANT = 'ASSISTANT',
+  SALES = 'SALES',
+  BILLING = 'BILLING',
+  DIRECTOR = 'DIRECTOR',
+  FINANCE = 'FINANCE',
+  HR = 'HR',
+  SAC = 'SAC',
+  GUEST = 'GUEST',
+}
+
 export class UserRules {
   @MaxLength(255)
   @IsString()
@@ -48,6 +64,10 @@ export class UserRules {
   @IsOptional()
   @IsEnum(UserRoles, { each: true })
   roles?: UserRoles[];
+
+  @IsOptional()
+  @IsEnum(UserSectors, { each: true })
+  sectors?: UserSectors[];
 
   @MaxLength(100)
   @IsString()
