@@ -29,4 +29,10 @@ export class ListUsersDto implements ListUsersUseCase.Input {
   })
   @IsOptional()
   filter?: string;
+
+  @ApiPropertyOptional({
+    description: 'Dado informado para filtrar o resultado pelo campo status',
+  })
+  @IsOptional()
+  status?: boolean;
 }

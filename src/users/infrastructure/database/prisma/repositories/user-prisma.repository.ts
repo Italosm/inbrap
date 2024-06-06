@@ -27,37 +27,34 @@ export class UserPrismaRepository implements UserRepository.Repository {
     const sortable = this.sortableFields?.includes(props.sort) || false;
     const orderByField = sortable ? props.sort : 'createdAt';
     const orderByDir = sortable ? props.sortDir : 'desc';
+    const status: boolean | null = props.status ?? null;
+    console.log(typeof status);
 
+    const whereConditions: any = {};
+    if (props.filter) {
+      whereConditions.name = {
+        contains: props.filter,
+        mode: 'insensitive',
+      };
+    }
+    if (props.status !== null && props.status !== undefined) {
+      whereConditions.status = status;
+    }
+    console.log(whereConditions);
     const count = await this.prismaService.user.count({
-      ...(props.filter && {
-        where: {
-          name: {
-            contains: props.filter,
-            mode: 'insensitive',
-          },
-        },
-      }),
+      where: whereConditions,
     });
-
-    const models = this.prismaService.user.findMany({
-      ...(props.filter && {
-        where: {
-          name: {
-            contains: props.filter,
-            mode: 'insensitive',
-          },
-        },
-        orderBy: {
-          [orderByField]: orderByDir,
-        },
-        skip:
-          props.page && props.page > 0 ? (props.page - 1) * props.perPage : 1,
-        take: props.perPage && props.perPage > 0 ? props.perPage : 15,
-      }),
+    const models = await this.prismaService.user.findMany({
+      where: whereConditions,
+      orderBy: {
+        [orderByField]: orderByDir,
+      },
+      skip: props.page && props.page > 0 ? (props.page - 1) * props.perPage : 0,
+      take: props.perPage && props.perPage > 0 ? props.perPage : 15,
     });
 
     return new UserRepository.SearchResult({
-      items: (await models).map(model => UserModelMapper.toEntity(model)),
+      items: models.map(model => UserModelMapper.toEntity(model)),
       total: count,
       currentPage: props.page,
       perPage: props.perPage,
