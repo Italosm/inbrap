@@ -8,7 +8,10 @@ import {
 } from '@/shared/application/dtos/pagination-output';
 
 export namespace ListUsersUseCase {
-  export type Input = SearchInput & { status?: boolean | null };
+  export type Input = SearchInput & {
+    status?: string | null;
+    sectors?: string | null;
+  };
 
   export type Output = PaginationOutput<UserOutput>;
 

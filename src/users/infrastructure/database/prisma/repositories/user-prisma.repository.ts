@@ -27,8 +27,6 @@ export class UserPrismaRepository implements UserRepository.Repository {
     const sortable = this.sortableFields?.includes(props.sort) || false;
     const orderByField = sortable ? props.sort : 'createdAt';
     const orderByDir = sortable ? props.sortDir : 'desc';
-    const status: boolean | null = props.status ?? null;
-    console.log(typeof status);
 
     const whereConditions: any = {};
     if (props.filter) {
@@ -38,9 +36,13 @@ export class UserPrismaRepository implements UserRepository.Repository {
       };
     }
     if (props.status !== null && props.status !== undefined) {
-      whereConditions.status = status;
+      whereConditions.status = props.status;
     }
-    console.log(whereConditions);
+    if (props.sectors !== null && props.sectors !== undefined) {
+      whereConditions.sectors = {
+        has: props.sectors,
+      };
+    }
     const count = await this.prismaService.user.count({
       where: whereConditions,
     });
