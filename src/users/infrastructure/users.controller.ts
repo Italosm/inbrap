@@ -56,11 +56,11 @@ export class UsersController {
   @Inject(ListUsersUseCase.UseCase)
   private listUsersUseCase: ListUsersUseCase.UseCase;
 
-  static userToResponse(output: UserOutput, token?: { token: string }) {
+  static userToResponse(output: UserOutput, token?: string) {
     const userPresenter = new UserPresenter(output);
 
     if (token) {
-      return { user: userPresenter, token: token.token };
+      return { user: userPresenter, token };
     }
     return userPresenter;
   }
@@ -138,6 +138,11 @@ export class UsersController {
     return UsersController.userToResponse(output);
   }
 
+  @Get('jwt')
+  async verifyJwt() {
+    return;
+  }
+
   @Roles(UserRoles.ADMIN)
   @Get(':id')
   @ApiOkResponse({ type: UserPresenter })
@@ -173,7 +178,6 @@ export class UsersController {
   })
   async login(@Body() signinDto: SigninDto) {
     const output = await this.signinUseCase.execute(signinDto);
-    console.log(output);
     return UsersController.userToResponse(output, output.token);
   }
 }
