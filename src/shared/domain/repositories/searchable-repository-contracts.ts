@@ -3,37 +3,33 @@ import { RepositoryInterface } from './repository-contracts';
 
 export type SortDirection = 'asc' | 'desc';
 
-export type SearchProps<Filter = string> = {
+export type SearchProps = {
   page?: number;
   perPage?: number;
   sort?: string | null;
   sortDir?: SortDirection | null;
-  filter?: Filter | null;
 };
 
-export type SearchResultProps<E extends Entity, Filter> = {
+export type SearchResultProps<E extends Entity> = {
   items: E[];
   total: number;
   currentPage: number;
   perPage: number;
   sort: string | null;
   sortDir: string | null;
-  filter: Filter | null;
 };
 
-export class SearchParams<Filter = string> {
+export class SearchParams {
   protected _page: number;
   protected _perPage = 15;
   protected _sort: string | null;
   protected _sortDir: SortDirection | null;
-  protected _filter: Filter | null;
 
-  constructor(props: SearchProps<Filter> = {}) {
+  constructor(props: SearchProps = {}) {
     this.page = props.page;
     this.perPage = props.perPage;
     this.sort = props.sort;
     this.sortDir = props.sortDir;
-    this.filter = props.filter;
   }
 
   get page() {
@@ -85,20 +81,9 @@ export class SearchParams<Filter = string> {
     const dir = `${value}`.toLowerCase();
     this._sortDir = dir !== 'asc' && dir !== 'desc' ? 'desc' : dir;
   }
-
-  get filter(): Filter | null {
-    return this._filter;
-  }
-
-  private set filter(value: Filter | null) {
-    this._filter =
-      value === null || value === undefined || value === ''
-        ? null
-        : (`${value}` as any);
-  }
 }
 
-export class SearchResult<E extends Entity, Filter = string> {
+export class SearchResult<E extends Entity> {
   readonly items: E[];
   readonly total: number;
   readonly currentPage: number;
@@ -106,9 +91,8 @@ export class SearchResult<E extends Entity, Filter = string> {
   readonly lastPage: number;
   readonly sort: string | null;
   readonly sortDir: string | null;
-  readonly filter: Filter | null;
 
-  constructor(props: SearchResultProps<E, Filter>) {
+  constructor(props: SearchResultProps<E>) {
     this.items = props.items;
     this.total = props.total;
     this.currentPage = props.currentPage;
@@ -116,7 +100,6 @@ export class SearchResult<E extends Entity, Filter = string> {
     this.lastPage = Math.ceil(this.total / this.perPage);
     this.sort = props.sort ?? null;
     this.sortDir = props.sortDir ?? null;
-    this.filter = props.filter ?? null;
   }
 
   toJSON(forceEntity = false) {
@@ -128,16 +111,14 @@ export class SearchResult<E extends Entity, Filter = string> {
       lastPage: this.lastPage,
       sort: this.sort,
       sortDir: this.sortDir,
-      filter: this.filter,
     };
   }
 }
 
 export interface SearchableRepositoryInterface<
   E extends Entity,
-  Filter = string,
-  SearchInput = SearchParams<Filter>,
-  SearchOutput = SearchResult<E, Filter>,
+  SearchInput = SearchParams,
+  SearchOutput = SearchResult<E>,
 > extends RepositoryInterface<E> {
   sortableFields: string[];
 

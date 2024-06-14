@@ -11,6 +11,7 @@ import { ListUsersUseCase } from '../application/usecases/listusers.usecase';
 import { AuthModule } from '@/auth/infrastructure/auth.module';
 import { SigninUseCase } from '../application/usecases/signin.usecase';
 import { GetMeUseCase } from '../application/usecases/getme.usecase';
+import { AuthService } from '@/auth/infrastructure/auth.service';
 
 @Module({
   imports: [forwardRef(() => AuthModule)],
@@ -46,10 +47,15 @@ import { GetMeUseCase } from '../application/usecases/getme.usecase';
       useFactory: (
         userRepository: UserRepository.Repository,
         hashProvider: HashProvider,
+        authService: AuthService,
       ) => {
-        return new SigninUseCase.UseCase(userRepository, hashProvider);
+        return new SigninUseCase.UseCase(
+          userRepository,
+          hashProvider,
+          authService,
+        );
       },
-      inject: ['UserRepository', 'HashProvider'],
+      inject: ['UserRepository', 'HashProvider', AuthService],
     },
     {
       provide: GetMeUseCase.UseCase,

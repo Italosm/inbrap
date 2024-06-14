@@ -6,11 +6,15 @@ import {
   PaginationOutput,
   PaginationOutputMapper,
 } from '@/shared/application/dtos/pagination-output';
+import { UserSectors, UserRoles } from '@/users/domain/entities/user.entity';
 
 export namespace ListUsersUseCase {
   export type Input = SearchInput & {
-    status?: string | null;
-    sectors?: string | null;
+    status?: boolean | null;
+    sector?: UserSectors[] | null;
+    role?: UserRoles[] | null;
+    email?: string | null;
+    name?: string | null;
   };
 
   export type Output = PaginationOutput<UserOutput>;

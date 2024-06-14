@@ -20,6 +20,6 @@ import { UsersModule } from '@/users/infrastructure/users.module';
     }),
   ],
   providers: [AuthService],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

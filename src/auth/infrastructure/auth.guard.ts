@@ -40,7 +40,8 @@ export class AuthGuard implements CanActivate {
       const decoded = await this.authService.verifyJwt(token);
       const id = decoded.id;
       const user = await this.userRepository.findById(id);
-      const { password, avatar, createdAt, updatedAt, ...userRequest } = user;
+      const { password, avatar, createdAt, updatedAt, ...userRequest } =
+        user.toJSON();
       request['user'] = userRequest;
       const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>(
         ROLES_KEY,

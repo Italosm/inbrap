@@ -27,20 +27,30 @@ export class UserPrismaRepository implements UserRepository.Repository {
     const sortable = this.sortableFields?.includes(props.sort) || false;
     const orderByField = sortable ? props.sort : 'createdAt';
     const orderByDir = sortable ? props.sortDir : 'desc';
-
     const whereConditions: any = {};
-    if (props.filter) {
+    if (props.name) {
       whereConditions.name = {
-        contains: props.filter,
+        startsWith: props.name,
+        mode: 'insensitive',
+      };
+    }
+    if (props.email) {
+      whereConditions.email = {
+        startsWith: props.email,
         mode: 'insensitive',
       };
     }
     if (props.status !== null && props.status !== undefined) {
       whereConditions.status = props.status;
     }
-    if (props.sectors !== null && props.sectors !== undefined) {
+    if (props.sector !== null && props.sector !== undefined) {
       whereConditions.sectors = {
-        has: props.sectors,
+        hasSome: props.sector,
+      };
+    }
+    if (props.role !== null && props.role !== undefined) {
+      whereConditions.roles = {
+        hasSome: props.role,
       };
     }
     const count = await this.prismaService.user.count({
@@ -62,7 +72,6 @@ export class UserPrismaRepository implements UserRepository.Repository {
       perPage: props.perPage,
       sort: orderByField,
       sortDir: orderByDir,
-      filter: props.filter,
     });
   }
 

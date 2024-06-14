@@ -56,9 +56,6 @@ export class UsersController {
   @Inject(ListUsersUseCase.UseCase)
   private listUsersUseCase: ListUsersUseCase.UseCase;
 
-  @Inject(AuthService)
-  private authService: AuthService;
-
   static userToResponse(output: UserOutput, token?: { token: string }) {
     const userPresenter = new UserPresenter(output);
 
@@ -175,8 +172,8 @@ export class UsersController {
     },
   })
   async login(@Body() signinDto: SigninDto) {
-    const user = await this.signinUseCase.execute(signinDto);
-    const token = await this.authService.generateJwt(user.id);
-    return UsersController.userToResponse(user, token);
+    const output = await this.signinUseCase.execute(signinDto);
+    console.log(output);
+    return UsersController.userToResponse(output, output.token);
   }
 }
