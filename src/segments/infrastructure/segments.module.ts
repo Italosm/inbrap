@@ -4,6 +4,7 @@ import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.se
 import { SegmentsPrismaRepository } from './database/prisma/repositories/segments-prisma.repository';
 import { CreateSegmentUseCase } from '../application/usecases/createsegment.usecase';
 import { SegmentsRepository } from '../domain/repositories/segments.repository';
+import { ListSegmentsUseCase } from '../application/usecases/listsegments.usecase';
 
 @Module({
   controllers: [SegmentsController],
@@ -33,13 +34,13 @@ import { SegmentsRepository } from '../domain/repositories/segments.repository';
     //   },
     //   inject: ['UserRepository'],
     // },
-    // {
-    //   provide: ListUsersUseCase.UseCase,
-    //   useFactory: (userRepository: UserRepository.Repository) => {
-    //     return new ListUsersUseCase.UseCase(userRepository);
-    //   },
-    //   inject: ['UserRepository'],
-    // },
+    {
+      provide: ListSegmentsUseCase.UseCase,
+      useFactory: (segmentsRepository: SegmentsRepository.Repository) => {
+        return new ListSegmentsUseCase.UseCase(segmentsRepository);
+      },
+      inject: ['SegmentsRepository'],
+    },
   ],
 })
 export class SegmentsModule {}
