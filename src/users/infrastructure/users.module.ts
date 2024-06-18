@@ -12,6 +12,7 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
 import { SigninUseCase } from '../application/usecases/signin.usecase';
 import { GetMeUseCase } from '../application/usecases/getme.usecase';
 import { AuthService } from '@/auth/infrastructure/auth.service';
+import { ListUsersBySectorUseCase } from '../application/usecases/listusersbysector.usecase';
 
 @Module({
   imports: [forwardRef(() => AuthModule)],
@@ -75,6 +76,13 @@ import { AuthService } from '@/auth/infrastructure/auth.service';
       provide: ListUsersUseCase.UseCase,
       useFactory: (userRepository: UserRepository.Repository) => {
         return new ListUsersUseCase.UseCase(userRepository);
+      },
+      inject: ['UserRepository'],
+    },
+    {
+      provide: ListUsersBySectorUseCase.UseCase,
+      useFactory: (userRepository: UserRepository.Repository) => {
+        return new ListUsersBySectorUseCase.UseCase(userRepository);
       },
       inject: ['UserRepository'],
     },

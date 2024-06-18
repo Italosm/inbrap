@@ -7,9 +7,16 @@ import { DatabaseModule } from './shared/infrastructure/database/database.module
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { AuthGuard } from './auth/infrastructure/auth.guard';
 import { AuthModule } from './auth/infrastructure/auth.module';
+import { SegmentsModule } from './segments/infrastructure/segments.module';
 
 @Module({
-  imports: [UsersModule, EnvConfigModule, DatabaseModule, AuthModule],
+  imports: [
+    UsersModule,
+    EnvConfigModule,
+    DatabaseModule,
+    AuthModule,
+    SegmentsModule,
+  ],
   controllers: [AppController],
   providers: [
     {

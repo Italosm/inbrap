@@ -8,7 +8,6 @@ import {
   Delete,
   Inject,
   Query,
-  Request,
   Req,
 } from '@nestjs/common';
 import { SignupUseCase } from '../application/usecases/signup.usecase';
@@ -21,7 +20,6 @@ import {
   UserCollectionPresenter,
 } from './presenters/user.presenter';
 import { ListUsersDto } from './dtos/list-users.dto';
-import { AuthService } from '@/auth/infrastructure/auth.service';
 import { SigninDto } from './dtos/signin.dto';
 import { SigninUseCase } from '../application/usecases/signin.usecase';
 import { Public } from '@/shared/infrastructure/decorators/public.decorator';
@@ -35,8 +33,11 @@ import {
   ApiResponse,
   getSchemaPath,
   ApiCreatedResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { FastifyRequest } from 'fastify';
+import { ListUsersBySectorUseCase } from '../application/usecases/listusersbysector.usecase';
+import { ListUsersSectorDto } from './dtos/list-users-sector.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -56,6 +57,9 @@ export class UsersController {
   @Inject(ListUsersUseCase.UseCase)
   private listUsersUseCase: ListUsersUseCase.UseCase;
 
+  @Inject(ListUsersBySectorUseCase.UseCase)
+  private listUsersBySectorUseCase: ListUsersUseCase.UseCase;
+
   static userToResponse(output: UserOutput, token?: string) {
     const userPresenter = new UserPresenter(output);
 
@@ -71,6 +75,10 @@ export class UsersController {
 
   @Public()
   @Post()
+  @ApiOperation({
+    summary: 'Create a new user',
+    description: 'Registers a new user with the provided details.',
+  })
   @ApiCreatedResponse({ type: UserPresenter })
   @ApiResponse({
     status: 409,
@@ -85,6 +93,8 @@ export class UsersController {
     return UsersController.userToResponse(user);
   }
 
+  @Roles(UserRoles.ADMIN)
+  @Get()
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
@@ -123,15 +133,81 @@ export class UsersController {
     status: 401,
     description: 'Acesso não autorizado',
   })
-  @Roles(UserRoles.ADMIN, UserRoles.USER)
-  @Get()
+  @ApiOperation({
+    summary: 'Search users',
+    description: 'This route is accessible only to users with the ADMIN role.',
+  })
   async search(@Query() searchParams: ListUsersDto) {
     const output = await this.listUsersUseCase.execute(searchParams);
     return UsersController.listUsersToResponse(output);
   }
 
+  @Roles(UserRoles.SUPERVISOR)
+  @Get('sector')
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        meta: {
+          type: 'object',
+          properties: {
+            total: {
+              type: 'number',
+            },
+            currentPage: {
+              type: 'number',
+            },
+            lastPage: {
+              type: 'number',
+            },
+            perPage: {
+              type: 'number',
+            },
+          },
+        },
+        data: {
+          type: 'array',
+          items: { $ref: getSchemaPath(UserPresenter) },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Parâmetros de consulta inválidos',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado',
+  })
+  @ApiOperation({
+    summary: 'Search users by sectors',
+    description:
+      'This route is accessible only to users with the SUPERVISOR role.',
+  })
+  async searchBySectors(
+    @Req() request: FastifyRequest,
+    @Query() searchParams: ListUsersSectorDto,
+  ) {
+    const { sectors } = request.user;
+    const paramsWithSectorUser = { ...searchParams, sector: sectors };
+    const output =
+      await this.listUsersBySectorUseCase.execute(paramsWithSectorUser);
+    return UsersController.listUsersToResponse(output);
+  }
+
   @Get('me')
-  @ApiOkResponse({ type: UserPresenter })
+  @ApiOperation({
+    summary: 'Get current user information',
+    description:
+      'Returns the details of the currently authenticated user based on the provided token.',
+  })
+  @ApiOkResponse({
+    description: 'Details of the currently authenticated user',
+    type: UserPresenter,
+  })
   async findMe(@Req() request: FastifyRequest) {
     const { id } = request.user;
     const output = await this.getMeUseCase.execute({ id });
@@ -139,12 +215,20 @@ export class UsersController {
   }
 
   @Get('jwt')
+  @ApiOperation({
+    summary: 'Verify JWT token',
+    description: 'Verifies the validity of the provided JWT token.',
+  })
   async verifyJwt() {
     return;
   }
 
   @Roles(UserRoles.ADMIN)
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get user by ID',
+    description: 'This route is accessible only to users with the ADMIN role.',
+  })
   @ApiOkResponse({ type: UserPresenter })
   async findOne(@Param('id') id: string) {
     const output = await this.getUserUseCase.execute({ id });
@@ -163,6 +247,11 @@ export class UsersController {
 
   @Public()
   @Post('login')
+  @ApiOperation({
+    summary: 'User login',
+    description:
+      'Authenticates a user based on provided credentials and returns user details along with a JWT token.',
+  })
   @ApiCreatedResponse({
     schema: {
       type: 'object',

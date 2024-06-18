@@ -55,3 +55,13 @@ model User {
 
   @@map("users")
 }
+
+model Segments {
+  id           String   @id @db.Uuid
+  segment      String   @unique @db.VarChar(255)
+  is_published Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("segments")
+}
