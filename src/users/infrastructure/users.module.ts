@@ -13,6 +13,9 @@ import { SigninUseCase } from '../application/usecases/signin.usecase';
 import { GetMeUseCase } from '../application/usecases/getme.usecase';
 import { AuthService } from '@/auth/infrastructure/auth.service';
 import { ListUsersBySectorUseCase } from '../application/usecases/listusersbysector.usecase';
+import { UpdateRolesUserUseCase } from '../application/usecases/update-roles.usecase';
+import { UpdateSectorsUserUseCase } from '../application/usecases/update-sectors.usecase';
+import { UpdateStatusUserUseCase } from '../application/usecases/update-status.usecase';
 
 @Module({
   imports: [forwardRef(() => AuthModule)],
@@ -83,6 +86,27 @@ import { ListUsersBySectorUseCase } from '../application/usecases/listusersbysec
       provide: ListUsersBySectorUseCase.UseCase,
       useFactory: (userRepository: UserRepository.Repository) => {
         return new ListUsersBySectorUseCase.UseCase(userRepository);
+      },
+      inject: ['UserRepository'],
+    },
+    {
+      provide: UpdateRolesUserUseCase.UseCase,
+      useFactory: (userRepository: UserRepository.Repository) => {
+        return new UpdateRolesUserUseCase.UseCase(userRepository);
+      },
+      inject: ['UserRepository'],
+    },
+    {
+      provide: UpdateSectorsUserUseCase.UseCase,
+      useFactory: (userRepository: UserRepository.Repository) => {
+        return new UpdateSectorsUserUseCase.UseCase(userRepository);
+      },
+      inject: ['UserRepository'],
+    },
+    {
+      provide: UpdateStatusUserUseCase.UseCase,
+      useFactory: (userRepository: UserRepository.Repository) => {
+        return new UpdateStatusUserUseCase.UseCase(userRepository);
       },
       inject: ['UserRepository'],
     },

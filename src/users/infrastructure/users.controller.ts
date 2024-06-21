@@ -38,6 +38,12 @@ import {
 import { FastifyRequest } from 'fastify';
 import { ListUsersBySectorUseCase } from '../application/usecases/listusersbysector.usecase';
 import { ListUsersSectorDto } from './dtos/list-users-sector.dto';
+import { UpdateRolesUserDto } from './dtos/update-roles-user.dto';
+import { UpdateRolesUserUseCase } from '../application/usecases/update-roles.usecase';
+import { UpdateSectorsUserDto } from './dtos/update-sectors-user.dto';
+import { UpdateSectorsUserUseCase } from '../application/usecases/update-sectors.usecase';
+import { UpdateStatusUserUseCase } from '../application/usecases/update-status.usecase';
+import { UpdateStatusUserDto } from './dtos/update-status-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -59,6 +65,15 @@ export class UsersController {
 
   @Inject(ListUsersBySectorUseCase.UseCase)
   private listUsersBySectorUseCase: ListUsersUseCase.UseCase;
+
+  @Inject(UpdateRolesUserUseCase.UseCase)
+  private updateRolesUserUseCase: UpdateRolesUserUseCase.UseCase;
+
+  @Inject(UpdateSectorsUserUseCase.UseCase)
+  private updateSectorsUserUseCase: UpdateSectorsUserUseCase.UseCase;
+
+  @Inject(UpdateStatusUserUseCase.UseCase)
+  private updateStatusUserUseCase: UpdateStatusUserUseCase.UseCase;
 
   static userToResponse(output: UserOutput, token?: string) {
     const userPresenter = new UserPresenter(output);
@@ -239,6 +254,39 @@ export class UsersController {
   // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
   //   return this.usersService.update(+id, updateUserDto);
   // }
+
+  @Roles(UserRoles.ADMIN)
+  @Patch(':id/roles')
+  async updateRoles(
+    @Param('id') id: string,
+    @Body() updateRolesUserDto: UpdateRolesUserDto,
+  ) {
+    const { roles } = updateRolesUserDto;
+    const output = await this.updateRolesUserUseCase.execute({ id, roles });
+    return UsersController.userToResponse(output);
+  }
+
+  @Roles(UserRoles.ADMIN)
+  @Patch(':id/sectors')
+  async updateSectors(
+    @Param('id') id: string,
+    @Body() updateSectorsUserDto: UpdateSectorsUserDto,
+  ) {
+    const { sectors } = updateSectorsUserDto;
+    const output = await this.updateSectorsUserUseCase.execute({ id, sectors });
+    return UsersController.userToResponse(output);
+  }
+
+  @Roles(UserRoles.ADMIN)
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusUserDto: UpdateStatusUserDto,
+  ) {
+    const { status } = updateStatusUserDto;
+    const output = await this.updateStatusUserUseCase.execute({ id, status });
+    return UsersController.userToResponse(output);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
