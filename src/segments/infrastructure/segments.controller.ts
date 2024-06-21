@@ -19,6 +19,9 @@ import {
 } from './presenters/segments.presenter';
 import { ListSegmentsUseCase } from '../application/usecases/listsegments.usecase';
 import { ListSegmentsDto } from './dto/listsegments.dto';
+import { GetSegmentsUseCase } from '../application/usecases/getsegment.usecase';
+import { Roles } from '@/shared/infrastructure/decorators/roles.decorator';
+import { UserRoles } from '@/users/domain/entities/user.entity';
 
 @Controller('segments')
 export class SegmentsController {
@@ -28,6 +31,9 @@ export class SegmentsController {
   @Inject(ListSegmentsUseCase.UseCase)
   private listSegmentsUseCase: ListSegmentsUseCase.UseCase;
 
+  @Inject(GetSegmentsUseCase.UseCase)
+  private getSegmentsUseCase: GetSegmentsUseCase.UseCase;
+
   static SegmentsToResponse(output: SegmentsOutput) {
     return new SegmentPresenter(output);
   }
@@ -36,22 +42,25 @@ export class SegmentsController {
     return new SegmentsCollectionPresenter(output);
   }
 
+  @Roles(UserRoles.ADMIN)
   @Post()
   async create(@Body() createSegmentDto: CreateSegmentDto) {
     const output = await this.createSegmentUseCase.execute(createSegmentDto);
     return SegmentsController.SegmentsToResponse(output);
   }
 
+  @Roles(UserRoles.USER)
   @Get()
   async findAll(@Query() searchParams: ListSegmentsDto) {
     const output = await this.listSegmentsUseCase.execute(searchParams);
     return SegmentsController.listSegmentsToResponse(output);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.segmentsService.findOne(+id);
-  // }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const output = await this.getSegmentsUseCase.execute({ id });
+    return SegmentsController.SegmentsToResponse(output);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateSegmentDto: UpdateSegmentDto) {
